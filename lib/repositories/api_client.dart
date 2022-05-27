@@ -17,7 +17,6 @@ class ApiClient {
         'limit': limit,
         'offset': offset ?? 0,
       });
-      print(response.realUri);
       _validateResponse(response);
       final json = response.data as Map<String, dynamic>;
       final topArtistResponse = TopArtistResponse.fromJson(json);
