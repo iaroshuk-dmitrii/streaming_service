@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:streaming_service/ui/screens/search_screen/search_screen_model.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:streaming_service/ui/navigation.dart';
 
 class SearchScreen extends StatelessWidget {
   const SearchScreen({Key? key}) : super(key: key);
@@ -87,7 +88,7 @@ class SearchScreen extends StatelessWidget {
                     ),
                   ),
                   onTap: () {
-                    //TODO
+                    Navigator.of(context).pushNamed(Screens.artistsAbout, arguments: model.artists[index]);
                   },
                 );
               }),

@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:streaming_service/ui/navigation.dart';
 import 'package:streaming_service/ui/screens/artists_screen/top_artists_screen_model.dart';
 
 class ArtistsScreen extends StatelessWidget {
@@ -60,7 +61,7 @@ class ArtistsScreen extends StatelessWidget {
                     ),
                   ),
                   onTap: () {
-                    //TODO
+                    Navigator.of(context).pushNamed(Screens.artistsAbout, arguments: model.artists[index]);
                   },
                 );
               }),
