@@ -6,6 +6,7 @@ import 'package:streaming_service/repositories/api_client.dart';
 class TopArtistsScreenModel extends ChangeNotifier {
   final ApiClient _apiClient = ApiClient();
   final List<ArtistModel> _artists = [];
+  final ScrollController scrollController = ScrollController();
   int _maxLength = 1;
   bool _isLoading = false;
 

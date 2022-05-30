@@ -1,18 +1,45 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:streaming_service/ui/screens/artists_screen/top_artists_screen_model.dart';
+import 'package:streaming_service/ui/screens/search_screen/search_screen_model.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
-class ArtistsScreen extends StatelessWidget {
-  const ArtistsScreen({Key? key}) : super(key: key);
+class SearchScreen extends StatelessWidget {
+  const SearchScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final model = context.watch<TopArtistsScreenModel>();
+    final model = context.watch<SearchScreenModel>();
     return Column(
       children: [
         AppBar(
-          title: const Text('Популярные исполнители'),
+          title: const Text('Поиск'),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: Row(
+            children: [
+              Expanded(
+                child: TextField(
+                  onChanged: (value) => model.changeSearchString(value),
+                ),
+              ),
+              TextButton(
+                style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all<Color>(Colors.purple),
+                  foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
+                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                    RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(25.0),
+                    ),
+                  ),
+                  padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
+                      const EdgeInsets.symmetric(horizontal: 30, vertical: 20)),
+                ),
+                onPressed: () => model.searchArtistList(),
+                child: const Text('Поиск'),
+              ),
+            ],
+          ),
         ),
         Expanded(
           child: GridView.builder(
@@ -24,7 +51,7 @@ class ArtistsScreen extends StatelessWidget {
               itemCount: model.artists.length,
               itemBuilder: (BuildContext context, int index) {
                 if (index >= model.artists.length - 4) {
-                  model.getArtistList();
+                  model.searchArtistList();
                 }
                 return GestureDetector(
                   child: Card(

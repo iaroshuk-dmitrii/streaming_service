@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:streaming_service/configuration/configuration.dart';
+import 'package:streaming_service/models/search_artist_response.dart';
 import 'package:streaming_service/models/top_artist_response.dart';
 
 class ApiClient {
@@ -21,6 +22,30 @@ class ApiClient {
       final json = response.data as Map<String, dynamic>;
       final topArtistResponse = TopArtistResponse.fromJson(json);
       return topArtistResponse;
+    } on SocketException {
+      throw ApiClientException(ApiClientExceptionType.network);
+    } on ApiClientException {
+      rethrow;
+    } catch (e) {
+      print(e.toString());
+      throw ApiClientException(ApiClientExceptionType.other);
+    }
+  }
+
+  Future<SearchArtistResponse> searchArtist({required String searchString, required int limit, int? offset}) async {
+    try {
+      final response = await _dio.get('search', queryParameters: {
+        'apikey': Configuration.apiKey,
+        'query': searchString,
+        'type': 'artist',
+        'per_type_limit': limit,
+        'offset': offset ?? 0,
+      });
+      print(response.realUri);
+      _validateResponse(response);
+      final json = response.data as Map<String, dynamic>;
+      final searchArtistResponse = SearchArtistResponse.fromJson(json);
+      return searchArtistResponse;
     } on SocketException {
       throw ApiClientException(ApiClientExceptionType.network);
     } on ApiClientException {

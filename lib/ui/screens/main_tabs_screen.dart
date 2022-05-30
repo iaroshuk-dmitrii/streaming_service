@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:streaming_service/ui/screens/artists_screen/top_artists_screen.dart';
 import 'package:streaming_service/ui/screens/artists_screen/top_artists_screen_model.dart';
 import 'package:streaming_service/ui/screens/collection_screen.dart';
-import 'package:streaming_service/ui/screens/search_screen.dart';
+import 'package:streaming_service/ui/screens/search_screen/search_screen.dart';
 import 'package:provider/provider.dart';
+import 'package:streaming_service/ui/screens/search_screen/search_screen_model.dart';
 
 class MainTabsScreen extends StatefulWidget {
   const MainTabsScreen({Key? key}) : super(key: key);
@@ -35,7 +36,10 @@ class _MainTabsScreenState extends State<MainTabsScreen> {
             create: (_) => TopArtistsScreenModel()..getArtistList(),
             child: const ArtistsScreen(),
           ),
-          const SearchScreen(),
+          ChangeNotifierProvider(
+            create: (_) => SearchScreenModel(),
+            child: const SearchScreen(),
+          ),
           const CollectionScreen(),
         ],
       ),
