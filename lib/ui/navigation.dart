@@ -30,7 +30,7 @@ class MainNavigation {
         final artist = settings.arguments as ArtistModel;
         return MaterialPageRoute(
             builder: (context) => ChangeNotifierProvider(
-                  create: (_) => ArtistsAboutScreenModel(artist: artist),
+                  create: (_) => ArtistsAboutScreenModel(artist: artist)..getTrackList(),
                   child: const ArtistsAboutScreen(),
                 ));
       default:

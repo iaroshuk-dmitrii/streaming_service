@@ -15,7 +15,7 @@ class TopArtistsScreenModel extends ChangeNotifier {
   Future<void> getArtistList() async {
     if (_artists.length <= _maxLength - 1 && !_isLoading) {
       _isLoading = true;
-      TopArtistResponse topArtistResponse = await _apiClient.getTopArtist(limit: 20, offset: _artists.length);
+      TopArtistResponse topArtistResponse = await _apiClient.getTopArtists(limit: 20, offset: _artists.length);
       _artists.addAll(topArtistResponse.artists);
       _maxLength = topArtistResponse.meta.totalCount;
       _isLoading = false;

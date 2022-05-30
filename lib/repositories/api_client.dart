@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:streaming_service/configuration/configuration.dart';
+import 'package:streaming_service/models/artist_top_tracks_response.dart';
 import 'package:streaming_service/models/search_artist_response.dart';
 import 'package:streaming_service/models/top_artist_response.dart';
 
@@ -11,7 +12,7 @@ class ApiClient {
     baseUrl: Configuration.baseUrl,
   ));
 
-  Future<TopArtistResponse> getTopArtist({required int limit, int? offset}) async {
+  Future<TopArtistResponse> getTopArtists({required int limit, int? offset}) async {
     try {
       final response = await _dio.get('artists/top', queryParameters: {
         'apikey': Configuration.apiKey,
@@ -41,11 +42,35 @@ class ApiClient {
         'per_type_limit': limit,
         'offset': offset ?? 0,
       });
-      print(response.realUri);
+      // print(response.realUri);
       _validateResponse(response);
       final json = response.data as Map<String, dynamic>;
       final searchArtistResponse = SearchArtistResponse.fromJson(json);
       return searchArtistResponse;
+    } on SocketException {
+      throw ApiClientException(ApiClientExceptionType.network);
+    } on ApiClientException {
+      rethrow;
+    } catch (e) {
+      print(e.toString());
+      throw ApiClientException(ApiClientExceptionType.other);
+    }
+  }
+
+  Future<ArtistTopTracksResponse> getTopArtistTracks(
+      {required String artistId, required int limit, int? offset}) async {
+    try {
+      final response = await _dio.get('artists/$artistId/tracks', queryParameters: {
+        'apikey': Configuration.apiKey,
+        'per_type_limit': limit,
+        'offset': offset ?? 0,
+      });
+      // print(response.realUri);
+      _validateResponse(response);
+      final json = response.data as Map<String, dynamic>;
+      final artistTopTracksResponse = ArtistTopTracksResponse.fromJson(json);
+
+      return artistTopTracksResponse;
     } on SocketException {
       throw ApiClientException(ApiClientExceptionType.network);
     } on ApiClientException {
