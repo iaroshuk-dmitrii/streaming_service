@@ -1,9 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:streaming_service/repositories/player_client.dart';
 import 'package:streaming_service/ui/widgets/player_widget/player_widget_model.dart';
 
 class PlayerWidget extends StatelessWidget {
   const PlayerWidget({Key? key}) : super(key: key);
+
+  void Function()? _playButtonPress(PlayerWidgetModel model) {
+    if (model.playerState == PlayerState.unknown) {
+      return null;
+    } else {
+      return () {
+        if (model.playerState == PlayerState.playing) {
+          model.pauseTrack();
+        } else {
+          model.playTrack();
+        }
+      };
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -11,20 +26,16 @@ class PlayerWidget extends StatelessWidget {
     return Row(
       children: [
         IconButton(
-          onPressed: () {
-            if (model.isPlaying) {
-              model.pauseTrack();
-            } else {
-              model.playTrack();
-            }
-          },
-          icon:
-              model.isPlaying ? const Icon(Icons.pause_circle_outline_outlined) : const Icon(Icons.play_circle_outline),
+          color: Theme.of(context).colorScheme.primary,
+          onPressed: _playButtonPress(model),
+          icon: (model.playerState == PlayerState.playing)
+              ? const Icon(Icons.pause_circle_outline_outlined)
+              : const Icon(Icons.play_circle_outline),
         ),
         Expanded(
           child: Slider(
-            value: model.playedTimeSeconds,
-            max: model.playbackSeconds,
+            value: model.playedTimeMilliseconds,
+            max: model.fullTimeInMilliseconds,
             onChanged: (value) {
               model.setTime(value);
             },

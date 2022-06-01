@@ -154,12 +154,16 @@ Future<void> _showPlayer(BuildContext context) async {
   bool playerIsShown = context.select((ArtistsAboutScreenModel model) => model.playerIsShown);
   TrackModel? currentTrack = context.select((ArtistsAboutScreenModel model) => model.currentTrack);
   if (playerIsShown && currentTrack != null) {
-    context
-        .read<PlayerWidgetModel>()
-        .setParams(playbackSeconds: currentTrack.playbackSeconds.toDouble(), trackUrl: currentTrack.previewURL);
+    context.read<PlayerWidgetModel>().setParams(trackUrl: currentTrack.previewURL);
     Future.microtask(
       () => showModalBottomSheet(
         context: context,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(25),
+            topRight: Radius.circular(25),
+          ),
+        ),
         builder: (BuildContext context) {
           return SizedBox(
             height: 250,
@@ -199,7 +203,10 @@ Future<void> _showPlayer(BuildContext context) async {
             ),
           );
         },
-      ).whenComplete(() => model.hidePlayer()),
+      ).whenComplete(() {
+        model.hidePlayer();
+        context.read<PlayerWidgetModel>().reset();
+      }),
     );
   }
 }
