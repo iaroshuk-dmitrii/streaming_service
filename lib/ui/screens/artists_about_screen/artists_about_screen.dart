@@ -1,13 +1,18 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:streaming_service/models/track_model.dart';
 import 'package:streaming_service/ui/screens/artists_about_screen/artists_about_screen_model.dart';
+import 'package:streaming_service/ui/widgets/player_widget/player_widget.dart';
+import 'package:streaming_service/ui/widgets/player_widget/player_widget_model.dart';
+import 'package:streaming_service/ui/widgets/rounded_button.dart';
 
 class ArtistsAboutScreen extends StatelessWidget {
   const ArtistsAboutScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    _showPlayer(context);
     return const Material(
       color: Colors.black,
       child: CustomScrollView(
@@ -99,7 +104,7 @@ class _TrackList extends StatelessWidget {
                 ),
                 trailing: IconButton(
                     onPressed: () {
-                      model.playTrack(model.tracks[index]);
+                      model.showPlayer(model.tracks[index]);
                     },
                     icon: const Icon(Icons.play_circle_outline)),
               ),
@@ -132,25 +137,69 @@ class _LoadButton extends StatelessWidget {
       return SliverToBoxAdapter(
         child: Center(
           child: Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: TextButton(
-              style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all<Color>(Colors.purple),
-                foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
-                shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                  RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(25.0),
-                  ),
-                ),
-                padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
-                    const EdgeInsets.symmetric(horizontal: 25, vertical: 25)),
-              ),
+            padding: const EdgeInsets.all(30.0),
+            child: RoundedButton(
+              buttonTitle: 'Загрузить ещё',
               onPressed: () => model.getTrackList(),
-              child: const Text('Загрузить ещё'),
             ),
           ),
         ),
       );
     }
+  }
+}
+
+Future<void> _showPlayer(BuildContext context) async {
+  final model = context.read<ArtistsAboutScreenModel>();
+  bool playerIsShown = context.select((ArtistsAboutScreenModel model) => model.playerIsShown);
+  TrackModel? currentTrack = context.select((ArtistsAboutScreenModel model) => model.currentTrack);
+  if (playerIsShown && currentTrack != null) {
+    context
+        .read<PlayerWidgetModel>()
+        .setParams(playbackSeconds: currentTrack.playbackSeconds.toDouble(), trackUrl: currentTrack.previewURL);
+    Future.microtask(
+      () => showModalBottomSheet(
+        context: context,
+        builder: (BuildContext context) {
+          return SizedBox(
+            height: 250,
+            child: Padding(
+              padding: const EdgeInsets.all(30.0),
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      CachedNetworkImage(
+                        height: 100,
+                        width: 100,
+                        // fit: BoxFit.fill,
+                        imageUrl:
+                            'https://api.napster.com/imageserver/v2/albums/${currentTrack.albumId}/images/300x300.jpg',
+                        errorWidget: (context, url, error) => const ColoredBox(color: Colors.grey),
+                      ),
+                      const SizedBox(width: 30),
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(currentTrack.albumName),
+                          Text(currentTrack.name),
+                          RoundedButton(
+                            buttonTitle: 'В коллекцию',
+                            onPressed: () => model.addToCollection(),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 15),
+                  const PlayerWidget(),
+                ],
+              ),
+            ),
+          );
+        },
+      ).whenComplete(() => model.hidePlayer()),
+    );
   }
 }

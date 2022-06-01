@@ -10,12 +10,16 @@ class ArtistsAboutScreenModel extends ChangeNotifier {
   final List<TrackModel> _tracks = [];
   int _maxLength = 1;
   bool _isLoading = false;
+  bool playerIsShown = false;
+  TrackModel? _currentTrack;
 
   ArtistsAboutScreenModel({required this.artist});
 
   List<TrackModel> get tracks => _tracks;
 
   bool get isLoading => _isLoading;
+
+  TrackModel? get currentTrack => _currentTrack;
 
   Future<void> getTrackList() async {
     print('getTrackList');
@@ -31,7 +35,22 @@ class ArtistsAboutScreenModel extends ChangeNotifier {
     }
   }
 
-  Future<void> playTrack(TrackModel track) async {
-    print('playTrack ${track.name}');
+  void showPlayer(TrackModel track) {
+    print('showPlayer ${track.name}');
+    playerIsShown = true;
+    _currentTrack = track;
+    notifyListeners();
+  }
+
+  void hidePlayer() {
+    print('hidePlayer');
+    _currentTrack = null;
+    playerIsShown = false;
+    notifyListeners();
+  }
+
+  Future<void> addToCollection() async {
+    print('addToCollection');
+    //TODO
   }
 }

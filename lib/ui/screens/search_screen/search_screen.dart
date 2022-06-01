@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:streaming_service/ui/screens/search_screen/search_screen_model.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:streaming_service/ui/navigation.dart';
+import 'package:streaming_service/ui/widgets/rounded_button.dart';
 
 class SearchScreen extends StatelessWidget {
   const SearchScreen({Key? key}) : super(key: key);
@@ -24,20 +25,9 @@ class SearchScreen extends StatelessWidget {
                   onChanged: (value) => model.changeSearchString(value),
                 ),
               ),
-              TextButton(
-                style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all<Color>(Colors.purple),
-                  foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
-                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                    RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(25.0),
-                    ),
-                  ),
-                  padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
-                      const EdgeInsets.symmetric(horizontal: 30, vertical: 20)),
-                ),
+              RoundedButton(
+                buttonTitle: 'Поиск',
                 onPressed: () => model.searchArtistList(),
-                child: const Text('Поиск'),
               ),
             ],
           ),
