@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:streaming_service/models/artist_model.dart';
 import 'package:streaming_service/models/artist_top_tracks_response.dart';
+import 'package:streaming_service/models/stored_track_model.dart';
 import 'package:streaming_service/models/track_model.dart';
 import 'package:streaming_service/repositories/api_client.dart';
+import 'package:streaming_service/repositories/local_storage_client.dart';
 
 class ArtistsAboutScreenModel extends ChangeNotifier {
   final ArtistModel artist;
   final ApiClient _apiClient = ApiClient();
+  final LocalStorageClient _localStorageClient = LocalStorageClient();
   final List<TrackModel> _tracks = [];
   int _maxLength = 1;
   bool _isLoading = false;
@@ -22,7 +25,6 @@ class ArtistsAboutScreenModel extends ChangeNotifier {
   TrackModel? get currentTrack => _currentTrack;
 
   Future<void> getTrackList() async {
-    print('getTrackList');
     if (_tracks.length <= _maxLength - 1 && !_isLoading) {
       _isLoading = true;
       notifyListeners();
@@ -36,21 +38,22 @@ class ArtistsAboutScreenModel extends ChangeNotifier {
   }
 
   void showPlayer(TrackModel track) {
-    print('showPlayer ${track.name}');
     playerIsShown = true;
     _currentTrack = track;
     notifyListeners();
   }
 
   void hidePlayer() {
-    print('hidePlayer');
     _currentTrack = null;
     playerIsShown = false;
     notifyListeners();
   }
 
   Future<void> addToCollection() async {
-    print('addToCollection');
-    //TODO
+    final cTrack = _currentTrack;
+    if (cTrack != null) {
+      StoredTrackModel track = StoredTrackModel.fromTrackModel(model: cTrack, dateAdding: DateTime.now());
+      await _localStorageClient.addTrack(track: track);
+    }
   }
 }

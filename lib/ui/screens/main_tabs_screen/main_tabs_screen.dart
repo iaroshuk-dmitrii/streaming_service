@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:streaming_service/ui/screens/artists_screen/top_artists_screen.dart';
 import 'package:streaming_service/ui/screens/artists_screen/top_artists_screen_model.dart';
-import 'package:streaming_service/ui/screens/collection_screen.dart';
+import 'package:streaming_service/ui/screens/collection_screen/collection_screen.dart';
+import 'package:streaming_service/ui/screens/collection_screen/collection_screen_model.dart';
 import 'package:streaming_service/ui/screens/main_tabs_screen/main_tabs_screen_model.dart';
 import 'package:streaming_service/ui/screens/search_screen/search_screen.dart';
 import 'package:provider/provider.dart';
@@ -25,7 +26,11 @@ class MainTabsScreen extends StatelessWidget {
             create: (_) => SearchScreenModel(),
             child: const SearchScreen(),
           ),
-          const CollectionScreen(),
+          ChangeNotifierProvider(
+            create: (_) => CollectionScreenModel()..getTrackList(),
+            lazy: false,
+            child: const CollectionScreen(),
+          ),
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
