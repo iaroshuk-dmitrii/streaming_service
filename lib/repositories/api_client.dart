@@ -18,6 +18,7 @@ class ApiClient {
         'apikey': Configuration.apiKey,
         'limit': limit,
         'offset': offset ?? 0,
+        'lang': 'ru-RU',
       });
       _validateResponse(response);
       final json = response.data as Map<String, dynamic>;
@@ -41,6 +42,7 @@ class ApiClient {
         'type': 'artist',
         'per_type_limit': limit,
         'offset': offset ?? 0,
+        'lang': 'ru-RU',
       });
       // print(response.realUri);
       _validateResponse(response);
@@ -64,6 +66,7 @@ class ApiClient {
         'apikey': Configuration.apiKey,
         'per_type_limit': limit,
         'offset': offset ?? 0,
+        'lang': 'ru-RU',
       });
       // print(response.realUri);
       _validateResponse(response);

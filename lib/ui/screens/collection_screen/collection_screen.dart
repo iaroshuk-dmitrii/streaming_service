@@ -1,11 +1,15 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:streaming_service/configuration/configuration.dart';
 import 'package:streaming_service/models/stored_track_model.dart';
 import 'package:streaming_service/ui/screens/collection_screen/collection_screen_model.dart';
+import 'package:streaming_service/ui/widgets/marquee_widget.dart';
 import 'package:streaming_service/ui/widgets/player_widget/player_widget.dart';
 import 'package:streaming_service/ui/widgets/player_widget/player_widget_model.dart';
 import 'package:streaming_service/ui/widgets/rounded_button.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:streaming_service/ui/widgets/track_list_tile.dart';
 
 class CollectionScreen extends StatelessWidget {
   const CollectionScreen({Key? key}) : super(key: key);
@@ -16,6 +20,7 @@ class CollectionScreen extends StatelessWidget {
     return Column(
       children: [
         AppBar(
+          toolbarHeight: 75,
           title: const Text('Коллекция'),
           actions: const [
             _SortButton(),
@@ -55,22 +60,26 @@ class _TrackList extends StatelessWidget {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(5.0),
           ),
-          child: ListTile(
-            title: Text(model.tracks[index].name),
-            subtitle: Text(model.tracks[index].albumName),
-            leading: CachedNetworkImage(
-              height: 65,
-              width: 65,
-              // fit: BoxFit.fill,
-              imageUrl:
-                  'https://api.napster.com/imageserver/v2/albums/${model.tracks[index].albumId}/images/300x300.jpg',
-              errorWidget: (context, url, error) => const ColoredBox(color: Colors.grey),
+          child: Slidable(
+            endActionPane: ActionPane(
+              motion: const ScrollMotion(),
+              children: [
+                SlidableAction(
+                  onPressed: (context) => _showDeleteDialog(context, trackID: model.tracks[index].id),
+                  backgroundColor: Colors.red,
+                  foregroundColor: Colors.white,
+                  icon: Icons.delete,
+                  label: 'Delete',
+                )
+              ],
             ),
-            trailing: IconButton(
-              onPressed: () => model.showPlayer(model.tracks[index]),
-              icon: const Icon(Icons.play_circle_outline),
+            child: TrackListTile(
+              id: model.tracks[index].albumId,
+              artistName: model.tracks[index].artistName,
+              name: model.tracks[index].name,
+              albumName: 'Album: ${model.tracks[index].albumName}',
+              onIconPressed: () => model.showPlayer(model.tracks[index]),
             ),
-            onLongPress: () => _showDeleteDialog(context, trackID: model.tracks[index].id),
           ),
         );
       },
@@ -91,28 +100,33 @@ _showDeleteDialog(BuildContext context, {required String trackID}) {
         ),
         actionsAlignment: MainAxisAlignment.start,
         actions: [
-          Column(
-            // crossAxisAlignment: CrossAxisAlignment.start,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              TextButton(
-                child: const Text('Да'),
+              RoundedButton(
+                buttonTitle: 'Да',
                 onPressed: () {
                   model.deleteTrack(trackID: trackID);
                   Navigator.of(context).pop();
                 },
+                transparent: true,
+                minimumSize: const Size(110, 0),
               ),
-              TextButton(
-                child: const Text('Нет'),
+              RoundedButton(
+                buttonTitle: 'Нет',
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
+                transparent: true,
+                minimumSize: const Size(110, 0),
               ),
             ],
           ),
         ],
-        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(20.0))),
-        titlePadding: const EdgeInsets.symmetric(vertical: 30, horizontal: 25.0),
-        actionsPadding: const EdgeInsets.symmetric(horizontal: 15.0),
+        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(15.0))),
+        titlePadding: const EdgeInsets.fromLTRB(24, 25, 24, 5),
+        actionsPadding: const EdgeInsets.fromLTRB(30, 5, 30, 24),
       );
     },
   );
@@ -140,26 +154,40 @@ Future<void> _showPlayer(BuildContext context) async {
               padding: const EdgeInsets.all(30.0),
               child: Column(
                 children: [
-                  Row(
-                    children: [
-                      CachedNetworkImage(
-                        height: 100,
-                        width: 100,
-                        // fit: BoxFit.fill,
-                        imageUrl:
-                            'https://api.napster.com/imageserver/v2/albums/${currentTrack.albumId}/images/300x300.jpg',
-                        errorWidget: (context, url, error) => const ColoredBox(color: Colors.grey),
-                      ),
-                      const SizedBox(width: 30),
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(currentTrack.albumName),
-                          Text(currentTrack.name),
-                        ],
-                      ),
-                    ],
+                  SizedBox(
+                    height: 100,
+                    child: Row(
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(10.0),
+                          child: CachedNetworkImage(
+                            height: 100,
+                            width: 100,
+                            imageUrl:
+                                '${Configuration.imageServerUrl}albums/${currentTrack.albumId}/images/300x300.jpg',
+                            placeholder: (context, url) => const ColoredBox(color: Colors.grey),
+                            errorWidget: (context, url, error) => const ColoredBox(color: Colors.grey),
+                          ),
+                        ),
+                        const SizedBox(width: 30),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            MarqueeWidget(
+                                child: Text(
+                              currentTrack.albumName,
+                              style: Theme.of(context).textTheme.labelMedium,
+                            )),
+                            MarqueeWidget(
+                                child: Text(
+                              currentTrack.name,
+                              style: Theme.of(context).textTheme.labelLarge,
+                            )),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                   const SizedBox(height: 15),
                   const PlayerWidget(),

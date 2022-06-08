@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:streaming_service/models/artist_model.dart';
 import 'package:streaming_service/models/search_artist_response.dart';
@@ -10,19 +12,22 @@ class SearchScreenModel extends ChangeNotifier {
   int _maxLength = 1;
   bool _isLoading = false;
   String _searchString = '';
+  Timer? _searchDebounce;
+  bool _disposed = false;
 
   List<ArtistModel> get artists => _artists;
 
   void changeSearchString(String searchString) {
     if (_searchString != searchString) {
       _searchString = searchString;
-      clearSearch();
+      _clearSearch();
       notifyListeners();
     }
   }
 
-  void clearSearch() {
+  void _clearSearch() {
     _artists.clear();
+    _maxLength = 1;
     notifyListeners();
   }
 
@@ -38,6 +43,32 @@ class SearchScreenModel extends ChangeNotifier {
       _maxLength = searchArtistResponse.meta.totalCount;
       _isLoading = false;
       notifyListeners();
+    }
+  }
+
+  Future<void> searchInString(String searchString) async {
+    _searchDebounce?.cancel();
+    _searchDebounce = Timer(const Duration(milliseconds: 500), () async {
+      if (_searchString != searchString) {
+        _searchString = searchString;
+        _clearSearch();
+        await searchArtistList();
+        notifyListeners();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _searchDebounce?.cancel();
+    _disposed = true;
+    super.dispose();
+  }
+
+  @override
+  void notifyListeners() {
+    if (!_disposed) {
+      super.notifyListeners();
     }
   }
 }

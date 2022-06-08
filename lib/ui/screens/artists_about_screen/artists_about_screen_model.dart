@@ -15,6 +15,7 @@ class ArtistsAboutScreenModel extends ChangeNotifier {
   bool _isLoading = false;
   bool playerIsShown = false;
   TrackModel? _currentTrack;
+  bool _disposed = false;
 
   ArtistsAboutScreenModel({required this.artist});
 
@@ -54,6 +55,19 @@ class ArtistsAboutScreenModel extends ChangeNotifier {
     if (cTrack != null) {
       StoredTrackModel track = StoredTrackModel.fromTrackModel(model: cTrack, dateAdding: DateTime.now());
       await _localStorageClient.addTrack(track: track);
+    }
+  }
+
+  @override
+  void dispose() {
+    _disposed = true;
+    super.dispose();
+  }
+
+  @override
+  void notifyListeners() {
+    if (!_disposed) {
+      super.notifyListeners();
     }
   }
 }

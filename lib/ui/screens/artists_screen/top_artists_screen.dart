@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:streaming_service/configuration/configuration.dart';
 import 'package:streaming_service/ui/navigation.dart';
 import 'package:streaming_service/ui/screens/artists_screen/top_artists_screen_model.dart';
 
@@ -13,6 +14,7 @@ class ArtistsScreen extends StatelessWidget {
     return Column(
       children: [
         AppBar(
+          toolbarHeight: 75,
           title: const Text('Популярные исполнители'),
         ),
         Expanded(
@@ -42,8 +44,8 @@ class ArtistsScreen extends StatelessWidget {
                           child: CachedNetworkImage(
                             fit: BoxFit.fill,
                             imageUrl:
-                                'https://api.napster.com/imageserver/v2/artists/${model.artists[index].id}/images/633x422.jpg',
-                            // placeholder: (context, url) => const CircularProgressIndicator(),
+                                '${Configuration.imageServerUrl}artists/${model.artists[index].id}/images/633x422.jpg',
+                            placeholder: (context, url) => const ColoredBox(color: Colors.grey),
                             errorWidget: (context, url, error) => const ColoredBox(color: Colors.grey),
                           ),
                         ),
@@ -51,7 +53,7 @@ class ArtistsScreen extends StatelessWidget {
                           child: Center(
                             child: Text(
                               model.artists[index].name,
-                              style: const TextStyle(fontSize: 20),
+                              style: Theme.of(context).textTheme.titleLarge,
                               maxLines: 3,
                               overflow: TextOverflow.ellipsis,
                             ),

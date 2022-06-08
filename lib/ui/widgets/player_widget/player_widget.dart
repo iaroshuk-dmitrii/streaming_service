@@ -26,11 +26,12 @@ class PlayerWidget extends StatelessWidget {
     return Row(
       children: [
         IconButton(
+          padding: EdgeInsets.zero,
           color: Theme.of(context).colorScheme.primary,
           onPressed: _playButtonPress(model),
           icon: (model.playerState == PlayerState.playing)
-              ? const Icon(Icons.pause_circle_outline_outlined)
-              : const Icon(Icons.play_circle_outline),
+              ? const Icon(Icons.pause_circle_outline_outlined, size: 30)
+              : const Icon(Icons.play_circle_outline, size: 30),
         ),
         Expanded(
           child: Slider(

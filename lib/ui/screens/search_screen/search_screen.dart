@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:streaming_service/configuration/configuration.dart';
 import 'package:streaming_service/ui/screens/search_screen/search_screen_model.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:streaming_service/ui/navigation.dart';
@@ -14,22 +15,33 @@ class SearchScreen extends StatelessWidget {
     return Column(
       children: [
         AppBar(
-          title: const Text('Поиск'),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(10.0),
-          child: Row(
-            children: [
-              Expanded(
-                child: TextField(
-                  onChanged: (value) => model.changeSearchString(value),
+          toolbarHeight: 75,
+          flexibleSpace: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
+            child: TextField(
+              cursorColor: Theme.of(context).hintColor,
+              decoration: const InputDecoration(
+                iconColor: Colors.amber,
+                isCollapsed: true,
+                isDense: true,
+                contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                prefixIcon: Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Icon(
+                    Icons.search,
+                  ),
+                ),
+                prefixIconConstraints: BoxConstraints.tightFor(),
+                hintText: 'Поиск',
+                filled: true,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(25.0)),
+                  borderSide: BorderSide.none,
                 ),
               ),
-              RoundedButton(
-                buttonTitle: 'Поиск',
-                onPressed: () => model.searchArtistList(),
-              ),
-            ],
+              autofocus: true,
+              onChanged: (value) => model.searchInString(value),
+            ),
           ),
         ),
         Expanded(
@@ -59,8 +71,8 @@ class SearchScreen extends StatelessWidget {
                           child: CachedNetworkImage(
                             fit: BoxFit.fill,
                             imageUrl:
-                                'https://api.napster.com/imageserver/v2/artists/${model.artists[index].id}/images/633x422.jpg',
-                            // placeholder: (context, url) => const CircularProgressIndicator(),
+                                '${Configuration.imageServerUrl}artists/${model.artists[index].id}/images/633x422.jpg',
+                            placeholder: (context, url) => const ColoredBox(color: Colors.grey),
                             errorWidget: (context, url, error) => const ColoredBox(color: Colors.grey),
                           ),
                         ),

@@ -1,11 +1,15 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:provider/provider.dart';
+import 'package:streaming_service/configuration/configuration.dart';
 import 'package:streaming_service/models/track_model.dart';
 import 'package:streaming_service/ui/screens/artists_about_screen/artists_about_screen_model.dart';
+import 'package:streaming_service/ui/widgets/marquee_widget.dart';
 import 'package:streaming_service/ui/widgets/player_widget/player_widget.dart';
 import 'package:streaming_service/ui/widgets/player_widget/player_widget_model.dart';
 import 'package:streaming_service/ui/widgets/rounded_button.dart';
+import 'package:streaming_service/ui/widgets/track_list_tile.dart';
 
 class ArtistsAboutScreen extends StatelessWidget {
   const ArtistsAboutScreen({Key? key}) : super(key: key);
@@ -34,14 +38,21 @@ class _PhotoAppBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final model = context.watch<ArtistsAboutScreenModel>();
     return SliverAppBar(
+      leading: IconButton(
+        icon: const Icon(
+          Icons.arrow_back_ios_new,
+        ),
+        onPressed: () => Navigator.of(context).pop(),
+      ),
       pinned: true,
       expandedHeight: (MediaQuery.of(context).size.width / 1.5),
       flexibleSpace: FlexibleSpaceBar(
-        title: Text(model.artist.name),
+        title: MarqueeWidget(child: Text(model.artist.name)),
         centerTitle: true,
         background: CachedNetworkImage(
           fit: BoxFit.cover,
-          imageUrl: 'https://api.napster.com/imageserver/v2/artists/${model.artist.id}/images/633x422.jpg',
+          imageUrl: '${Configuration.imageServerUrl}artists/${model.artist.id}/images/633x422.jpg',
+          placeholder: (context, url) => const ColoredBox(color: Colors.grey),
           errorWidget: (context, url, error) => const ColoredBox(color: Colors.grey),
         ),
       ),
@@ -66,7 +77,7 @@ class _BioList extends StatelessWidget {
               left: 20,
               right: 20,
             ),
-            child: Text(bio),
+            child: Html(data: bio),
           );
         },
       ),
@@ -91,22 +102,11 @@ class _TrackList extends StatelessWidget {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(5.0),
               ),
-              child: ListTile(
-                title: Text(model.tracks[index].name),
-                subtitle: Text(model.tracks[index].albumName),
-                leading: CachedNetworkImage(
-                  height: 65,
-                  width: 65,
-                  // fit: BoxFit.fill,
-                  imageUrl:
-                      'https://api.napster.com/imageserver/v2/albums/${model.tracks[index].albumId}/images/300x300.jpg',
-                  errorWidget: (context, url, error) => const ColoredBox(color: Colors.grey),
-                ),
-                trailing: IconButton(
-                    onPressed: () {
-                      model.showPlayer(model.tracks[index]);
-                    },
-                    icon: const Icon(Icons.play_circle_outline)),
+              child: TrackListTile(
+                id: model.tracks[index].albumId,
+                name: model.tracks[index].name,
+                albumName: model.tracks[index].albumName,
+                onIconPressed: () => model.showPlayer(model.tracks[index]),
               ),
             );
           },
@@ -171,30 +171,45 @@ Future<void> _showPlayer(BuildContext context) async {
               padding: const EdgeInsets.all(30.0),
               child: Column(
                 children: [
-                  Row(
-                    children: [
-                      CachedNetworkImage(
-                        height: 100,
-                        width: 100,
-                        // fit: BoxFit.fill,
-                        imageUrl:
-                            'https://api.napster.com/imageserver/v2/albums/${currentTrack.albumId}/images/300x300.jpg',
-                        errorWidget: (context, url, error) => const ColoredBox(color: Colors.grey),
-                      ),
-                      const SizedBox(width: 30),
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(currentTrack.albumName),
-                          Text(currentTrack.name),
-                          RoundedButton(
-                            buttonTitle: 'В коллекцию',
-                            onPressed: () => model.addToCollection(),
+                  SizedBox(
+                    height: 100,
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(10.0),
+                          child: CachedNetworkImage(
+                            height: 100,
+                            width: 100,
+                            imageUrl:
+                                '${Configuration.imageServerUrl}albums/${currentTrack.albumId}/images/300x300.jpg',
+                            placeholder: (context, url) => const ColoredBox(color: Colors.grey),
+                            errorWidget: (context, url, error) => const ColoredBox(color: Colors.grey),
                           ),
-                        ],
-                      ),
-                    ],
+                        ),
+                        const SizedBox(width: 15),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            MarqueeWidget(
+                                child: Text(
+                              currentTrack.albumName,
+                              style: Theme.of(context).textTheme.labelMedium,
+                            )),
+                            MarqueeWidget(
+                                child: Text(
+                              currentTrack.name,
+                              style: Theme.of(context).textTheme.labelLarge,
+                            )),
+                            const Expanded(child: SizedBox.shrink()),
+                            SmallRoundedButton(
+                              buttonTitle: 'В коллекцию',
+                              onPressed: () => model.addToCollection(),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                   const SizedBox(height: 15),
                   const PlayerWidget(),

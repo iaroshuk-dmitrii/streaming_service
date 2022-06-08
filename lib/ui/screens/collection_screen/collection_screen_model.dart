@@ -9,6 +9,7 @@ class CollectionScreenModel extends ChangeNotifier {
   SortType _sortType = SortType.byDateDescending;
   bool playerIsShown = false;
   StoredTrackModel? _currentTrack;
+  bool _disposed = false;
 
   List<StoredTrackModel> get tracks => _tracks;
 
@@ -55,6 +56,19 @@ class CollectionScreenModel extends ChangeNotifier {
       _tracks.sort((a, b) => a.dateAdding.compareTo(b.dateAdding));
     } else if (_sortType == SortType.byDateDescending) {
       _tracks.sort((a, b) => b.dateAdding.compareTo(a.dateAdding));
+    }
+  }
+
+  @override
+  void dispose() {
+    _disposed = true;
+    super.dispose();
+  }
+
+  @override
+  void notifyListeners() {
+    if (!_disposed) {
+      super.notifyListeners();
     }
   }
 }

@@ -7,6 +7,7 @@ class PlayerWidgetModel extends ChangeNotifier {
   int _playedTimeInMilliseconds = 0;
   int _fullTimeInMilliseconds = 0;
   PlayerState _playerState = PlayerState.unknown;
+  bool _disposed = false;
 
   StreamSubscription<Duration>? _durationSubscription;
   StreamSubscription<Duration>? _audioPositionSubscription;
@@ -69,5 +70,18 @@ class PlayerWidgetModel extends ChangeNotifier {
     await _audioPositionSubscription?.cancel();
     await _playerStateSubscription?.cancel();
     await _onSeekCompleteSubscription?.cancel();
+  }
+
+  @override
+  void dispose() {
+    _disposed = true;
+    super.dispose();
+  }
+
+  @override
+  void notifyListeners() {
+    if (!_disposed) {
+      super.notifyListeners();
+    }
   }
 }

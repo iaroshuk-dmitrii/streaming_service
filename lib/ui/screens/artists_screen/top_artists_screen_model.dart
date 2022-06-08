@@ -9,6 +9,7 @@ class TopArtistsScreenModel extends ChangeNotifier {
   final ScrollController scrollController = ScrollController();
   int _maxLength = 1;
   bool _isLoading = false;
+  bool _disposed = false;
 
   List<ArtistModel> get artists => _artists;
 
@@ -20,6 +21,19 @@ class TopArtistsScreenModel extends ChangeNotifier {
       _maxLength = topArtistResponse.meta.totalCount;
       _isLoading = false;
       notifyListeners();
+    }
+  }
+
+  @override
+  void dispose() {
+    _disposed = true;
+    super.dispose();
+  }
+
+  @override
+  void notifyListeners() {
+    if (!_disposed) {
+      super.notifyListeners();
     }
   }
 }
