@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:streaming_service/models/artist_model.dart';
@@ -16,7 +18,7 @@ class MainNavigation {
 
   final routes = <String, Widget Function(BuildContext)>{
     Screens.mainTabs: (context) {
-      print('Create MainTabsScreen');
+      log('Create MainTabsScreen');
       return ChangeNotifierProvider(
         create: (_) => MainTabsScreenModel(),
         child: const MainTabsScreen(),

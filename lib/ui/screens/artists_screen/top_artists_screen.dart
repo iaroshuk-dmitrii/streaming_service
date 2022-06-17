@@ -14,7 +14,7 @@ class ArtistsScreen extends StatelessWidget {
     return Column(
       children: [
         AppBar(
-          toolbarHeight: 75,
+          toolbarHeight: 60,
           title: const Text('Популярные исполнители'),
         ),
         Expanded(

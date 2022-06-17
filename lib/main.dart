@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
 import 'package:provider/provider.dart';
 import 'package:streaming_service/repositories/local_storage_client.dart';
 import 'package:streaming_service/ui/navigation.dart';

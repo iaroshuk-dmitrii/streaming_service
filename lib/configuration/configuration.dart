@@ -4,5 +4,4 @@ class Configuration {
   static const String baseUrl = 'https://api.napster.com/v2.2/';
   static const String imageServerUrl = 'https://api.napster.com/imageserver/v2/';
   static const String boxName = 'track_collection';
-  static const String? boxPath = null;
 }

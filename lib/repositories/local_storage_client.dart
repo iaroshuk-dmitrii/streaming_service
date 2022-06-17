@@ -1,4 +1,8 @@
+import 'dart:developer';
+import 'dart:io';
+
 import 'package:hive/hive.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:streaming_service/configuration/configuration.dart';
 import 'package:streaming_service/models/stored_track_model.dart';
@@ -8,8 +12,10 @@ class LocalStorageClient {
   final _box = Hive.box<StoredTrackModel>(Configuration.boxName);
 
   static Future<void> init() async {
+    Directory directory = await getApplicationDocumentsDirectory();
+    log(directory.path);
     Hive
-      ..init(Configuration.boxPath)
+      ..init(directory.path)
       ..registerAdapter(StoredTrackModelAdapter());
     await Hive.openBox<StoredTrackModel>(Configuration.boxName);
   }

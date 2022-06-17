@@ -20,7 +20,7 @@ class CollectionScreen extends StatelessWidget {
     return Column(
       children: [
         AppBar(
-          toolbarHeight: 75,
+          toolbarHeight: 60,
           title: const Text('Коллекция'),
           actions: const [
             _SortButton(),

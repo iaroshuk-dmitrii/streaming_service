@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
@@ -29,7 +30,7 @@ class ApiClient {
     } on ApiClientException {
       rethrow;
     } catch (e) {
-      print(e.toString());
+      log(e.toString());
       throw ApiClientException(ApiClientExceptionType.other);
     }
   }
@@ -44,7 +45,6 @@ class ApiClient {
         'offset': offset ?? 0,
         'lang': 'ru-RU',
       });
-      // print(response.realUri);
       _validateResponse(response);
       final json = response.data as Map<String, dynamic>;
       final searchArtistResponse = SearchArtistResponse.fromJson(json);
@@ -54,7 +54,7 @@ class ApiClient {
     } on ApiClientException {
       rethrow;
     } catch (e) {
-      print(e.toString());
+      log(e.toString());
       throw ApiClientException(ApiClientExceptionType.other);
     }
   }
@@ -68,7 +68,6 @@ class ApiClient {
         'offset': offset ?? 0,
         'lang': 'ru-RU',
       });
-      // print(response.realUri);
       _validateResponse(response);
       final json = response.data as Map<String, dynamic>;
       final artistTopTracksResponse = ArtistTopTracksResponse.fromJson(json);
@@ -79,7 +78,7 @@ class ApiClient {
     } on ApiClientException {
       rethrow;
     } catch (e) {
-      print(e.toString());
+      log(e.toString());
       throw ApiClientException(ApiClientExceptionType.other);
     }
   }

@@ -4,7 +4,6 @@ import 'package:streaming_service/configuration/configuration.dart';
 import 'package:streaming_service/ui/screens/search_screen/search_screen_model.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:streaming_service/ui/navigation.dart';
-import 'package:streaming_service/ui/widgets/rounded_button.dart';
 
 class SearchScreen extends StatelessWidget {
   const SearchScreen({Key? key}) : super(key: key);
@@ -15,9 +14,9 @@ class SearchScreen extends StatelessWidget {
     return Column(
       children: [
         AppBar(
-          toolbarHeight: 75,
+          toolbarHeight: 60,
           flexibleSpace: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
+            padding: const EdgeInsets.only(left: 30, right: 30, top: 30),
             child: TextField(
               cursorColor: Theme.of(context).hintColor,
               decoration: const InputDecoration(
