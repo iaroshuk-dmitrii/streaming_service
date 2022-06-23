@@ -11,12 +11,12 @@ class ApiClient {
   final Dio _dio = Dio(BaseOptions(
     receiveTimeout: 10000,
     baseUrl: Configuration.baseUrl,
+    headers: {'apikey': Configuration.apiKey},
   ));
 
   Future<TopArtistResponse> getTopArtists({required int limit, int? offset}) async {
     try {
       final response = await _dio.get('artists/top', queryParameters: {
-        'apikey': Configuration.apiKey,
         'limit': limit,
         'offset': offset ?? 0,
         'lang': 'ru-RU',
@@ -38,10 +38,9 @@ class ApiClient {
   Future<SearchArtistResponse> searchArtist({required String searchString, required int limit, int? offset}) async {
     try {
       final response = await _dio.get('search', queryParameters: {
-        'apikey': Configuration.apiKey,
         'query': searchString,
         'type': 'artist',
-        'per_type_limit': limit,
+        'limit': limit,
         'offset': offset ?? 0,
         'lang': 'ru-RU',
       });
@@ -63,8 +62,7 @@ class ApiClient {
       {required String artistId, required int limit, int? offset}) async {
     try {
       final response = await _dio.get('artists/$artistId/tracks', queryParameters: {
-        'apikey': Configuration.apiKey,
-        'per_type_limit': limit,
+        'limit': limit,
         'offset': offset ?? 0,
         'lang': 'ru-RU',
       });

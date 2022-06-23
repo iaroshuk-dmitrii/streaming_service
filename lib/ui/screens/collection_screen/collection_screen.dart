@@ -1,7 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:streaming_service/configuration/configuration.dart';
 import 'package:streaming_service/models/stored_track_model.dart';
 import 'package:streaming_service/ui/screens/collection_screen/collection_screen_model.dart';
 import 'package:streaming_service/ui/widgets/marquee_widget.dart';
@@ -10,6 +9,7 @@ import 'package:streaming_service/ui/widgets/player_widget/player_widget_model.d
 import 'package:streaming_service/ui/widgets/rounded_button.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:streaming_service/ui/widgets/track_list_tile.dart';
+import 'package:streaming_service/utils/get_image_url.dart';
 
 class CollectionScreen extends StatelessWidget {
   const CollectionScreen({Key? key}) : super(key: key);
@@ -20,7 +20,6 @@ class CollectionScreen extends StatelessWidget {
     return Column(
       children: [
         AppBar(
-          toolbarHeight: 60,
           title: const Text('Коллекция'),
           actions: const [
             _SortButton(),
@@ -163,8 +162,7 @@ Future<void> _showPlayer(BuildContext context) async {
                           child: CachedNetworkImage(
                             height: 100,
                             width: 100,
-                            imageUrl:
-                                '${Configuration.imageServerUrl}albums/${currentTrack.albumId}/images/300x300.jpg',
+                            imageUrl: getAlbumPhotoUrl(currentTrack.albumId),
                             placeholder: (context, url) => const ColoredBox(color: Colors.grey),
                             errorWidget: (context, url, error) => const ColoredBox(color: Colors.grey),
                           ),

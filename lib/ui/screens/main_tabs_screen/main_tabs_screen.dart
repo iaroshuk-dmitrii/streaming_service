@@ -15,23 +15,25 @@ class MainTabsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final model = context.watch<MainTabsScreenModel>();
     return Scaffold(
-      body: IndexedStack(
-        index: model.currentTab,
-        children: [
-          ChangeNotifierProvider(
-            create: (_) => TopArtistsScreenModel()..getArtistList(),
-            child: const ArtistsScreen(),
-          ),
-          ChangeNotifierProvider(
-            create: (_) => SearchScreenModel(),
-            child: const SearchScreen(),
-          ),
-          ChangeNotifierProvider(
-            create: (_) => CollectionScreenModel()..getTrackList(),
-            lazy: false,
-            child: const CollectionScreen(),
-          ),
-        ],
+      body: SafeArea(
+        child: IndexedStack(
+          index: model.currentTab,
+          children: [
+            ChangeNotifierProvider(
+              create: (_) => TopArtistsScreenModel()..getArtistList(),
+              child: const ArtistsScreen(),
+            ),
+            ChangeNotifierProvider(
+              create: (_) => SearchScreenModel(),
+              child: const SearchScreen(),
+            ),
+            ChangeNotifierProvider(
+              create: (_) => CollectionScreenModel()..getTrackList(),
+              lazy: false,
+              child: const CollectionScreen(),
+            ),
+          ],
+        ),
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: model.currentTab,

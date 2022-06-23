@@ -2,7 +2,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:provider/provider.dart';
-import 'package:streaming_service/configuration/configuration.dart';
 import 'package:streaming_service/models/track_model.dart';
 import 'package:streaming_service/ui/screens/artists_about_screen/artists_about_screen_model.dart';
 import 'package:streaming_service/ui/widgets/marquee_widget.dart';
@@ -10,6 +9,7 @@ import 'package:streaming_service/ui/widgets/player_widget/player_widget.dart';
 import 'package:streaming_service/ui/widgets/player_widget/player_widget_model.dart';
 import 'package:streaming_service/ui/widgets/rounded_button.dart';
 import 'package:streaming_service/ui/widgets/track_list_tile.dart';
+import 'package:streaming_service/utils/get_image_url.dart';
 
 class ArtistsAboutScreen extends StatelessWidget {
   const ArtistsAboutScreen({Key? key}) : super(key: key);
@@ -51,7 +51,7 @@ class _PhotoAppBar extends StatelessWidget {
         centerTitle: true,
         background: CachedNetworkImage(
           fit: BoxFit.cover,
-          imageUrl: '${Configuration.imageServerUrl}artists/${model.artist.id}/images/633x422.jpg',
+          imageUrl: getArtistPhotoUrl(model.artist.id),
           placeholder: (context, url) => const ColoredBox(color: Colors.grey),
           errorWidget: (context, url, error) => const ColoredBox(color: Colors.grey),
         ),
@@ -181,8 +181,7 @@ Future<void> _showPlayer(BuildContext context) async {
                           child: CachedNetworkImage(
                             height: 100,
                             width: 100,
-                            imageUrl:
-                                '${Configuration.imageServerUrl}albums/${currentTrack.albumId}/images/300x300.jpg',
+                            imageUrl: getAlbumPhotoUrl(currentTrack.albumId),
                             placeholder: (context, url) => const ColoredBox(color: Colors.grey),
                             errorWidget: (context, url, error) => const ColoredBox(color: Colors.grey),
                           ),

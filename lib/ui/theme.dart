@@ -6,6 +6,7 @@ abstract class AppTheme {
       secondary: Colors.purple,
       onSecondary: Colors.white,
     ),
+    appBarTheme: const AppBarTheme(toolbarHeight: 60),
     sliderTheme: const SliderThemeData(
       activeTrackColor: Colors.purple,
       inactiveTrackColor: Colors.grey,
@@ -13,7 +14,7 @@ abstract class AppTheme {
     ),
     textTheme: const TextTheme(
       titleLarge: TextStyle(
-        fontSize: 15,
+        fontSize: 24,
       ),
       labelLarge: TextStyle(
         fontSize: 15,
@@ -30,8 +31,10 @@ abstract class AppTheme {
       ),
       bodyMedium: TextStyle(
         color: Colors.grey,
+        fontSize: 12,
       ),
       bodySmall: TextStyle(
+        color: Colors.white,
         fontSize: 12,
       ),
     ),

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:streaming_service/configuration/configuration.dart';
 import 'package:streaming_service/ui/screens/search_screen/search_screen_model.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:streaming_service/ui/navigation.dart';
+import 'package:streaming_service/ui/widgets/artist_card.dart';
+import 'package:streaming_service/utils/get_image_url.dart';
 
 class SearchScreen extends StatelessWidget {
   const SearchScreen({Key? key}) : super(key: key);
@@ -14,13 +14,11 @@ class SearchScreen extends StatelessWidget {
     return Column(
       children: [
         AppBar(
-          toolbarHeight: 60,
-          flexibleSpace: Padding(
-            padding: const EdgeInsets.only(left: 30, right: 30, top: 30),
+          title: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 25),
             child: TextField(
               cursorColor: Theme.of(context).hintColor,
               decoration: const InputDecoration(
-                iconColor: Colors.amber,
                 isCollapsed: true,
                 isDense: true,
                 contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
@@ -38,7 +36,7 @@ class SearchScreen extends StatelessWidget {
                   borderSide: BorderSide.none,
                 ),
               ),
-              autofocus: true,
+              autofocus: false,
               onChanged: (value) => model.searchInString(value),
             ),
           ),
@@ -47,46 +45,21 @@ class SearchScreen extends StatelessWidget {
           child: GridView.builder(
               controller: model.scrollController,
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                mainAxisSpacing: 15,
+                crossAxisSpacing: 15,
                 crossAxisCount: 2,
-                // childAspectRatio: (155 / 120),
+                childAspectRatio: (155 / 120),
               ),
+              padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 15),
               itemCount: model.artists.length,
               itemBuilder: (BuildContext context, int index) {
                 if (index >= model.artists.length - 4) {
                   model.searchArtistList();
                 }
                 return GestureDetector(
-                  child: Card(
-                    color: Colors.black54,
-                    margin: const EdgeInsets.all(15.0),
-                    clipBehavior: Clip.hardEdge,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15.0),
-                    ),
-                    child: Column(
-                      children: [
-                        AspectRatio(
-                          aspectRatio: 1.5,
-                          child: CachedNetworkImage(
-                            fit: BoxFit.fill,
-                            imageUrl:
-                                '${Configuration.imageServerUrl}artists/${model.artists[index].id}/images/633x422.jpg',
-                            placeholder: (context, url) => const ColoredBox(color: Colors.grey),
-                            errorWidget: (context, url, error) => const ColoredBox(color: Colors.grey),
-                          ),
-                        ),
-                        Flexible(
-                          child: Center(
-                            child: Text(
-                              model.artists[index].name,
-                              style: const TextStyle(fontSize: 20),
-                              maxLines: 3,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
+                  child: ArtistCard(
+                    artistName: model.artists[index].name,
+                    photoUrl: getArtistPhotoUrl(model.artists[index].id),
                   ),
                   onTap: () {
                     Navigator.of(context).pushNamed(Screens.artistsAbout, arguments: model.artists[index]);

@@ -1,7 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:streaming_service/configuration/configuration.dart';
 import 'package:streaming_service/ui/widgets/marquee_widget.dart';
+import 'package:streaming_service/utils/get_image_url.dart';
 
 class TrackListTile extends StatelessWidget {
   final String id;
@@ -28,7 +28,7 @@ class TrackListTile extends StatelessWidget {
           CachedNetworkImage(
             height: 65,
             width: 65,
-            imageUrl: '${Configuration.imageServerUrl}albums/$id/images/300x300.jpg',
+            imageUrl: getAlbumPhotoUrl(id),
             placeholder: (context, url) => const ColoredBox(color: Colors.grey),
             errorWidget: (context, url, error) => const ColoredBox(color: Colors.grey),
           ),
