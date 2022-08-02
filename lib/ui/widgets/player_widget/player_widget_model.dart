@@ -9,10 +9,9 @@ class PlayerWidgetModel extends ChangeNotifier {
   PlayerState _playerState = PlayerState.unknown;
   bool _disposed = false;
 
-  StreamSubscription<Duration>? _durationSubscription;
+  StreamSubscription<Duration?>? _durationSubscription;
   StreamSubscription<Duration>? _audioPositionSubscription;
   StreamSubscription<PlayerState>? _playerStateSubscription;
-  StreamSubscription<void>? _onSeekCompleteSubscription;
 
   PlayerWidgetModel();
 
@@ -25,7 +24,7 @@ class PlayerWidgetModel extends ChangeNotifier {
   Future<void> setParams({required String trackUrl}) async {
     await reset();
     notifyListeners();
-    _fullTimeInMilliseconds = await _player.setUrl(trackUrl);
+    _fullTimeInMilliseconds = (await _player.setUrl(trackUrl))?.inMilliseconds ?? 0;
     subscribe();
     _playerState = PlayerState.stopped;
     notifyListeners();
@@ -44,16 +43,13 @@ class PlayerWidgetModel extends ChangeNotifier {
   }
 
   Future<void> subscribe() async {
-    _durationSubscription = _player.onDurationChanged.listen((Duration duration) {
-      _fullTimeInMilliseconds = duration.inMilliseconds;
+    _durationSubscription = _player.onDurationChanged.listen((Duration? duration) {
+      _fullTimeInMilliseconds = duration?.inMilliseconds ?? 0;
       notifyListeners();
     });
     _audioPositionSubscription = _player.onAudioPositionChanged.listen((Duration pos) {
-      // во время паузы сбрасывается в 0
-      if (_playerState != PlayerState.paused) {
-        _playedTimeInMilliseconds = pos.inMilliseconds;
-        notifyListeners();
-      }
+      _playedTimeInMilliseconds = pos.inMilliseconds;
+      notifyListeners();
     });
     _playerStateSubscription = _player.onPlayerStateChanged.listen((PlayerState state) {
       _playerState = state;
@@ -62,14 +58,13 @@ class PlayerWidgetModel extends ChangeNotifier {
   }
 
   Future<void> reset() async {
-    _playedTimeInMilliseconds = 0;
+    await _player.pause();
     _fullTimeInMilliseconds = 0;
+    _playedTimeInMilliseconds = 0;
     _playerState = PlayerState.unknown;
-    await _player.release();
-    await _durationSubscription?.cancel();
     await _audioPositionSubscription?.cancel();
+    await _durationSubscription?.cancel();
     await _playerStateSubscription?.cancel();
-    await _onSeekCompleteSubscription?.cancel();
   }
 
   @override

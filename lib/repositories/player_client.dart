@@ -1,68 +1,49 @@
 import 'dart:async';
-
-import 'package:audioplayers/audioplayers.dart' as player;
+import 'dart:developer';
+import 'package:just_audio/just_audio.dart' as player;
 
 class PlayerClient {
   final player.AudioPlayer _audioPlayer = player.AudioPlayer();
 
-  Future<int> setUrl(String url) async {
-    int result = await _audioPlayer.setUrl(url);
-    if (result == 1) {
-      int duration = await Future.delayed(
-        const Duration(seconds: 1),
-        () => _audioPlayer.getDuration(),
-      );
-      // +1 т.к. аудиоплеер неверно считает длительность (меньше на 1 мс)
-      return duration + 1;
+  Future<Duration?> setUrl(String url) async {
+    try {
+      final duration = await _audioPlayer.setUrl(url);
+      return duration;
+    } catch (e) {
+      log('An error opening URL: $e');
     }
-    return 0;
+    return null;
   }
 
   Future<void> play() async {
-    int result = await _audioPlayer.resume();
-    if (result == 1) {
-      //TODO
-    }
+    await _audioPlayer.play();
   }
 
   Future<void> pause() async {
-    int result = await _audioPlayer.pause();
+    await _audioPlayer.pause();
   }
 
   Future<void> seek(int milliseconds) async {
-    int result = await _audioPlayer.seek(Duration(milliseconds: milliseconds));
-    if (result == 1) {
-      //TODO
-    }
+    await _audioPlayer.seek(Duration(milliseconds: milliseconds));
   }
 
-  Future<void> release() async {
-    int result = await _audioPlayer.release();
-    if (result == 1) {
-      //TODO
-    }
-  }
+  Stream<Duration?> get onDurationChanged => _audioPlayer.durationStream;
 
-  Stream<Duration> get onDurationChanged => _audioPlayer.onDurationChanged;
-
-  Stream<Duration> get onAudioPositionChanged => _audioPlayer.onAudioPositionChanged;
+  Stream<Duration> get onAudioPositionChanged => _audioPlayer.positionStream;
 
   Stream<PlayerState> get onPlayerStateChanged {
-    return _audioPlayer.onPlayerStateChanged.map((event) {
-      switch (event) {
-        case player.PlayerState.STOPPED:
-          return PlayerState.stopped;
-        case player.PlayerState.PLAYING:
-          return PlayerState.playing;
-        case player.PlayerState.PAUSED:
-          return PlayerState.paused;
-        case player.PlayerState.COMPLETED:
-          return PlayerState.completed;
+    return _audioPlayer.playerStateStream.map((event) {
+      if (event.processingState == player.ProcessingState.completed) {
+        pause();
+        return PlayerState.completed;
+      }
+      if (event.playing) {
+        return PlayerState.playing;
+      } else {
+        return PlayerState.paused;
       }
     }).cast();
   }
-
-  Stream<void> get onSeekComplete => _audioPlayer.onSeekComplete;
 }
 
 enum PlayerState {

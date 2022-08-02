@@ -12,10 +12,14 @@ class LocalStorageClient {
   final _box = Hive.box<StoredTrackModel>(Configuration.boxName);
 
   static Future<void> init() async {
-    Directory directory = await getApplicationDocumentsDirectory();
-    log(directory.path);
+    Directory? directory;
+    try {
+      directory = await getApplicationDocumentsDirectory();
+    } catch (e) {
+      log('Directory error: $e');
+    }
     Hive
-      ..init(directory.path)
+      ..init(directory?.path)
       ..registerAdapter(StoredTrackModelAdapter());
     await Hive.openBox<StoredTrackModel>(Configuration.boxName);
   }

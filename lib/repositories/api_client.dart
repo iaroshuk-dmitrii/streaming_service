@@ -9,7 +9,6 @@ import 'package:streaming_service/models/top_artist_response.dart';
 
 class ApiClient {
   final Dio _dio = Dio(BaseOptions(
-    receiveTimeout: 10000,
     baseUrl: Configuration.baseUrl,
     headers: {'apikey': Configuration.apiKey},
   ));
@@ -49,8 +48,10 @@ class ApiClient {
       final searchArtistResponse = SearchArtistResponse.fromJson(json);
       return searchArtistResponse;
     } on SocketException {
+      log('SocketException');
       throw ApiClientException(ApiClientExceptionType.network);
     } on ApiClientException {
+      log('ApiClientException');
       rethrow;
     } catch (e) {
       log(e.toString());
